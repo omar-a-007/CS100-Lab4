@@ -12,6 +12,8 @@ class Person{
 
     public:
         Person(const char *name, Person* father, Person* mother);
+        Person(const Person& src); // copy constructor for deep copy //
+        Person& operator=(const Person& rhs);
         ~Person();
 
         const char* getName(){return name;}

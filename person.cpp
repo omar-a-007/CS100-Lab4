@@ -6,13 +6,50 @@ using std::cout;
 using std::endl;
 
 Person::Person(const char *name_, Person* father_, Person* mother_){
-    name = new char[strlen(name_)];
+    name = new char[strlen(name_)+1]; /* Need +1 for the null-terminator */
     strcpy(name, name_);
     father = father_;
     mother = mother_;
     capacity = 1;
     numChildren = 0;
     children = new Person*[capacity];
+}
+
+/* Copy constructor for deep copy */
+Person::Person(const Person& src) {
+   name = new char[strlen(src.name)+1];
+   strcpy(name, src.name);
+
+   father = src.father;
+   mother = src.mother;
+   capacity = src.capacity;
+   numChildren = src.numChildren;
+
+   /* if children is not null, we need to deep copy it */ 
+   children = new Person*[capacity];
+   for (int i{0}; i < numChildren; ++i)
+	children[i] = src.children[i];
+}
+
+Person& Person::operator=(const Person& rhs) {
+   // Avoid Self Assign
+   if (this == &rhs) return *this;
+
+   char* new_name = new char[strlen(rhs.name)+1];
+   strcpy(new_name, rhs.name);
+   delete[] name;
+   name = new_name;
+
+   father = rhs.father;
+   mother = rhs.mother;
+   capacity = rhs.capacity;
+   numChildren = rhs.numChildren;
+
+   Person** new_children = new Person*[capacity];
+   for(int i{0}; i < numChildren; ++i)   
+       new_children[i] = rhs.children[i];
+   delete[] children;
+   children = new_children;
 }
 
 Person::~Person(){
@@ -52,6 +89,7 @@ void Person::printLineage(char dir, int level){
             father->printLineage(dir, level + 1);
         }
     }
+    delete[] temp;
 }
 
 /* helper function to compute the lineage
@@ -78,5 +116,6 @@ void expand(Person ***t, int *MAX){
   Person **temp = new Person*[2 * *MAX];
   memcpy(temp, *t, *MAX * sizeof(**t));
   *MAX *= 2;
+  delete[] *t;
   *t = temp;
 }
