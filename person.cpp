@@ -15,45 +15,9 @@ Person::Person(const char *name_, Person* father_, Person* mother_){
     children = new Person*[capacity];
 }
 
-/* Copy constructor for deep copy */
-Person::Person(const Person& src) {
-   name = new char[strlen(src.name)+1];
-   strcpy(name, src.name);
-
-   father = src.father;
-   mother = src.mother;
-   capacity = src.capacity;
-   numChildren = src.numChildren;
-
-   /* if children is not null, we need to deep copy it */ 
-   children = new Person*[capacity];
-   for (int i{0}; i < numChildren; ++i)
-	children[i] = src.children[i];
-}
-
-Person& Person::operator=(const Person& rhs) {
-   // Avoid Self Assign
-   if (this == &rhs) return *this;
-
-   char* new_name = new char[strlen(rhs.name)+1];
-   strcpy(new_name, rhs.name);
-   delete[] name;
-   name = new_name;
-
-   father = rhs.father;
-   mother = rhs.mother;
-   capacity = rhs.capacity;
-   numChildren = rhs.numChildren;
-
-   Person** new_children = new Person*[capacity];
-   for(int i{0}; i < numChildren; ++i)   
-       new_children[i] = rhs.children[i];
-   delete[] children;
-   children = new_children;
-}
-
 Person::~Person(){
-    delete children;
+    delete[] name;
+    delete[] children;
 }
 
 void Person::addChild(Person *newChild){
@@ -104,6 +68,7 @@ char* Person::compute_relation(int level){
     for(int i = 2; i <= level; i++){
         char *temp2 = new char[strlen("great ") + strlen(temp) + 1];
         strcat(strcpy(temp2, "great "), temp);
+	delete[] temp;
         temp = temp2;
     }
     return temp;
